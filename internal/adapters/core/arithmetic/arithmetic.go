@@ -7,6 +7,10 @@ import (
 type Adapter struct {
 }
 
+func NewAdapter() *Adapter {
+	return &Adapter{}
+}
+
 func (arith *Adapter) Sum(a, b int) (int, error) {
 	return a + b, nil
 }
