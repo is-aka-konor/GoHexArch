@@ -10,7 +10,7 @@ import (
 )
 
 func (grpca Adapter) GetSum(cts context.Context, request *pb.OperationParameters) (*pb.Result, error) {
-	result, err := grpca.api.Sum(int(request.GetA()), int(request.GetB()))
+	result, err := grpca.api.GetSum(int(request.GetA()), int(request.GetB()))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error: %v", err)
 	}
@@ -18,7 +18,7 @@ func (grpca Adapter) GetSum(cts context.Context, request *pb.OperationParameters
 }
 
 func (grpca Adapter) GetSub(cts context.Context, request *pb.OperationParameters) (*pb.Result, error) {
-	result, err := grpca.api.Sub(int(request.GetA()), int(request.GetB()))
+	result, err := grpca.api.GetSub(int(request.GetA()), int(request.GetB()))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error: %v", err)
 	}
@@ -26,7 +26,7 @@ func (grpca Adapter) GetSub(cts context.Context, request *pb.OperationParameters
 }
 
 func (grpca Adapter) GetMul(cts context.Context, request *pb.OperationParameters) (*pb.Result, error) {
-	result, err := grpca.api.Mul(int(request.GetA()), int(request.GetB()))
+	result, err := grpca.api.GetMul(int(request.GetA()), int(request.GetB()))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error: %v", err)
 	}
@@ -37,7 +37,7 @@ func (grpca Adapter) GetDiv(cts context.Context, request *pb.OperationParameters
 	if request.GetB() == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "Error: Division by zero")
 	}
-	result, err := grpca.api.Div(int(request.GetA()), int(request.GetB()))
+	result, err := grpca.api.GetDiv(int(request.GetA()), int(request.GetB()))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error: %v", err)
 	}
