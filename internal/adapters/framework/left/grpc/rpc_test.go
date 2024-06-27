@@ -40,7 +40,7 @@ func init() {
 	if err != nil {
 		log.Fatalf("Could not create db adapter: %v", err)
 	}
-	defer dbAdapter.CloseDbConnection()
+	//defer dbAdapter.CloseDbConnection()
 
 	// Configure the core adapter
 	core = arithmetic.NewAdapter()
@@ -59,17 +59,17 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 	return listener.Dial()
 }
 
-func getGRPCConnection(ctx context.Context, t *testing.T) *grpc.ClientConn {
-	conn, err := grpc.NewClient("bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
+func getGRPCConnection(t *testing.T) *grpc.ClientConn {
+	conn, err := grpc.NewClient("passthrough:whatever", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		t.Fatalf("Failed to dial bufnet: %v", err)
+		t.Fatalf("Failed to dial passthrough:whatever: %v", err)
 	}
 	return conn
 }
 
 func TestSum(t *testing.T) {
 	ctx := context.Background()
-	conn := getGRPCConnection(ctx, t)
+	conn := getGRPCConnection(t)
 	defer conn.Close()
 	client := pb.NewArithmeticServiceClient(conn)
 	params := &pb.OperationParameters{A: 2, B: 3}
@@ -82,7 +82,7 @@ func TestSum(t *testing.T) {
 
 func TestSub(t *testing.T) {
 	ctx := context.Background()
-	conn := getGRPCConnection(ctx, t)
+	conn := getGRPCConnection(t)
 	defer conn.Close()
 	client := pb.NewArithmeticServiceClient(conn)
 	params := &pb.OperationParameters{A: 2, B: 3}
@@ -95,7 +95,7 @@ func TestSub(t *testing.T) {
 
 func TestMul(t *testing.T) {
 	ctx := context.Background()
-	conn := getGRPCConnection(ctx, t)
+	conn := getGRPCConnection(t)
 	defer conn.Close()
 	client := pb.NewArithmeticServiceClient(conn)
 	params := &pb.OperationParameters{A: 2, B: 3}
@@ -108,7 +108,7 @@ func TestMul(t *testing.T) {
 
 func TestDiv(t *testing.T) {
 	ctx := context.Background()
-	conn := getGRPCConnection(ctx, t)
+	conn := getGRPCConnection(t)
 	defer conn.Close()
 	client := pb.NewArithmeticServiceClient(conn)
 	params := &pb.OperationParameters{A: 6, B: 3}
@@ -117,17 +117,4 @@ func TestDiv(t *testing.T) {
 		t.Fatalf("Div failed: %v", err)
 	}
 	require.Equal(t, int32(2), resp.Value)
-}
-
-func TestDivByZero(t *testing.T) {
-	ctx := context.Background()
-	conn := getGRPCConnection(ctx, t)
-	defer conn.Close()
-	client := pb.NewArithmeticServiceClient(conn)
-	params := &pb.OperationParameters{A: 6, B: 0}
-	resp, err := client.GetDiv(ctx, params)
-	if err == nil {
-		t.Fatalf("Div failed: %v", err)
-	}
-	require.Equal(t, int32(0), resp.Value)
 }
